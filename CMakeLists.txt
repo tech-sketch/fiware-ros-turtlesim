@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   rospy
   std_msgs
+  rostest
 )
 
 ## System dependencies are found with CMake's conventions
@@ -196,4 +197,5 @@ install(PROGRAMS
 # endif()
 
 ## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
+catkin_add_nosetests(tests/unit)
+add_rostest(tests/node/rostest.test)

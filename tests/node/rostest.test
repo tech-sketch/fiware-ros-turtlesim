@@ -1,0 +1,6 @@
+<launch>
+  <node name="turtlesim_operator" pkg="turtlesim_operator" type="command_sender_node.py">
+    <rosparam command="load" file="$(find turtlesim_operator)/config/params.yaml"/>
+  </node>
+  <test test-name="turtlesim_operator" pkg="turtlesim_operator" type="test_turtlesim_operator.py"/>
+</launch>
