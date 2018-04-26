@@ -6,13 +6,9 @@ from geometry_msgs.msg import Twist
 
 import paho.mqtt.client as mqtt
 
+from turtlesim_operator.params import getParams
 from turtlesim_operator.logging import getLogger
 logger = getLogger(__name__)
-
-HOST = 'localhost'
-PORT = 1883
-MQTT_TOPIC = '/ros/turtle/cmd'
-ROS_TOPIC = '/turtle1/cmd_vel'
 
 class CommandSender(object):
     def __init__(self):
@@ -22,18 +18,20 @@ class CommandSender(object):
 
         rospy.on_shutdown(self.__client.disconnect)
         rospy.on_shutdown(self.__client.loop_stop)
-        self.__ros_pub = rospy.Publisher(ROS_TOPIC, Twist, queue_size=10)
+
+        self.__params = getParams(rospy.get_param("~"))
 
     def start(self):
-        logger.infof('Start Listening')
-        self.__client.connect(HOST, port=PORT, keepalive=60)
+        logger.debugf('Start Listening')
+        self.__client.connect(self.__params.mqtt.host, port=self.__params.mqtt.port, keepalive=60)
         self.__client.loop_start()
 
+        self.__ros_pub = rospy.Publisher(self.__params.ros.topics.turtlesim.publish, Twist, queue_size=10)
         rospy.spin()
 
     def __on_connect(self, client, userdata, flags, response_code):
         logger.debugf('mqtt connect status={}', response_code)
-        client.subscribe(MQTT_TOPIC)
+        client.subscribe(self.__params.mqtt.topics.command_sender.subscribe)
 
     def __on_message(self, client, userdata, msg):
         logger.debugf('received msg={}', str(msg.payload))

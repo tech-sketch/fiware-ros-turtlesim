@@ -1,0 +1,10 @@
+mqtt:
+  host: "localhost"
+  port: 1883
+  topics:
+    command_sender:
+      subscribe: "/ros/turtle/cmd"
+ros:
+  topics:
+    turtlesim:
+      publish: "/turtle1/cmd_vel"

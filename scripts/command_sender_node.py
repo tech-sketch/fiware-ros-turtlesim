@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
+
 import rospy
 
 from turtlesim_operator.command_sender import CommandSender
 from turtlesim_operator.logging import getLogger
 logger = getLogger(__name__)
 
-NODE_NAME = 'command_sender_node'
-LOG_LEVEL = rospy.DEBUG
+NODE_NAME = os.path.basename(__file__)
 
 def main():
     try:
-        rospy.init_node(NODE_NAME, log_level=LOG_LEVEL)
+        rospy.init_node(NODE_NAME)
         logger.infof('Start Node : {}', NODE_NAME)
         sender = CommandSender()
         sender.start()
