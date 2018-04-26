@@ -6,11 +6,13 @@ from geometry_msgs.msg import Twist
 
 import paho.mqtt.client as mqtt
 
+from turtlesim_operator.logging import getLogger
+logger = getLogger(__name__)
+
 HOST = 'localhost'
 PORT = 1883
 MQTT_TOPIC = '/ros/turtle/cmd'
 ROS_TOPIC = '/turtle1/cmd_vel'
-NODE_NAME = 'command_sender'
 
 class CommandSender(object):
     def __init__(self):
@@ -23,25 +25,24 @@ class CommandSender(object):
         self.__ros_pub = rospy.Publisher(ROS_TOPIC, Twist, queue_size=10)
 
     def start(self):
-        rospy.init_node(NODE_NAME)
-
+        logger.infof('Start Listening')
         self.__client.connect(HOST, port=PORT, keepalive=60)
         self.__client.loop_start()
 
         rospy.spin()
 
     def __on_connect(self, client, userdata, flags, response_code):
-        print('CommendSender.__on_connect: status={}'.format(response_code))
+        logger.debugf('mqtt connect status={}', response_code)
         client.subscribe(MQTT_TOPIC)
 
     def __on_message(self, client, userdata, msg):
-        print('CommandSender.__on_message: msg={}'.format(str(msg.payload)))
+        logger.debugf('received msg={}', str(msg.payload))
         payload = str(msg.payload)
         if payload == 'circle':
             self.__do_circle()
 
     def __do_circle(self):
-        print('do circle')
+        logger.infof('do circle')
 
         rate = 60
         r = rospy.Rate(rate)
@@ -54,4 +55,3 @@ class CommandSender(object):
             self.__ros_pub.publish(move_cmd)
             r.sleep()
         self.__ros_pub.publish(Twist())
-
