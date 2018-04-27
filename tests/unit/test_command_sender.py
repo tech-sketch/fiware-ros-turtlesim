@@ -13,11 +13,9 @@ from turtlesim_operator.command_sender import CommandSender
 
 class TestCommandSender(unittest.TestCase):
     def setMock(self, mocked_rospy, mocked_mqtt):
-        self.mocked_mqtt = mocked_mqtt
         self.mocked_client = mocked_mqtt.Client.return_value
 
-        self.mocked_rospy = mocked_rospy
-        self.mocked_rospy.get_param.return_value = {
+        mocked_rospy.get_param.return_value = {
             "mqtt": {
                 "host": "testhost",
                 "port": 1883,
@@ -43,10 +41,10 @@ class TestCommandSender(unittest.TestCase):
         sender = CommandSender(node_name)
         self.assertEqual(sender.node_name, node_name)
 
-        self.assertFalse(self.mocked_mqtt.called)
-        self.mocked_mqtt.Client.assert_called_once_with(protocol=self.mocked_mqtt.MQTTv311)
-        self.assertEqual(self.mocked_rospy.on_shutdown.call_count, 2)
-        self.mocked_rospy.Publisher.assert_called_once_with('/ros/topics/turtlesim', Twist, queue_size=10)
+        self.assertFalse(mocked_mqtt.called)
+        mocked_mqtt.Client.assert_called_once_with(protocol=mocked_mqtt.MQTTv311)
+        self.assertEqual(mocked_rospy.on_shutdown.call_count, 2)
+        mocked_rospy.Publisher.assert_called_once_with('/ros/topics/turtlesim', Twist, queue_size=10)
 
     @patch('turtlesim_operator.command_sender.mqtt')
     @patch('turtlesim_operator.command_sender.rospy')
@@ -63,7 +61,7 @@ class TestCommandSender(unittest.TestCase):
         self.setMock(mocked_rospy, mocked_mqtt)
 
         CommandSender('foo').start()
-        self.mocked_rospy.spin.assert_called_once_with()
+        mocked_rospy.spin.assert_called_once_with()
 
     @patch('turtlesim_operator.command_sender.mqtt')
     @patch('turtlesim_operator.command_sender.rospy')
@@ -95,10 +93,10 @@ class TestCommandSender(unittest.TestCase):
     def test_do_circle(self, mocked_rospy, mocked_mqtt):
         self.setMock(mocked_rospy, mocked_mqtt)
 
-        mocked_pub = self.mocked_rospy.Publisher.return_value
+        mocked_pub = mocked_rospy.Publisher.return_value
 
         CommandSender('foo')._do_circle()
-        self.mocked_rospy.Rate.assert_called_once_with(60)
+        mocked_rospy.Rate.assert_called_once_with(60)
         self.assertEqual(mocked_pub.publish.call_count, int(2 * pi * 60) + 2)
         args_list = mocked_pub.publish.call_args_list
         twist = Twist()
