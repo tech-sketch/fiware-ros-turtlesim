@@ -1,0 +1,10 @@
+mqtt:
+  host: "testhost"
+  port: 1883
+  topics:
+    - key: "command_sender"
+      name: "/mqtt/topics/command_sender"
+ros:
+  topics:
+    - key: "turtlesim"
+      name: "/ros/topics/turtlesim"

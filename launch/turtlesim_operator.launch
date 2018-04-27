@@ -2,5 +2,6 @@
   <node name="turtlesim_operator" pkg="turtlesim_operator" type="command_sender_node.py" output="screen">
     <rosparam command="delete" param=""/>
     <rosparam command="load" file="$(find turtlesim_operator)/config/params.yaml"/>
+    <param name="mode" value="production"/>
   </node>
 </launch>

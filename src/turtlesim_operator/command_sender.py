@@ -6,40 +6,52 @@ from geometry_msgs.msg import Twist
 
 import paho.mqtt.client as mqtt
 
-from turtlesim_operator.params import getParams
+from turtlesim_operator.params import getParams, findItem
 from turtlesim_operator.logging import getLogger
 logger = getLogger(__name__)
 
 class CommandSender(object):
-    def __init__(self):
+    def __init__(self, node_name):
+        self.node_name = node_name
         self.__client = mqtt.Client(protocol=mqtt.MQTTv311)
-        self.__client.on_connect = self.__on_connect
-        self.__client.on_message = self.__on_message
+        self.__client.on_connect = self._on_connect
+        self.__client.on_message = self._on_message
 
         rospy.on_shutdown(self.__client.disconnect)
         rospy.on_shutdown(self.__client.loop_stop)
 
-        self.__params = getParams(rospy.get_param("~"))
+        self._params = getParams(rospy.get_param("~"))
+        topic = findItem(self._params.ros.topics, 'key', 'turtlesim')
+        self.__ros_pub = rospy.Publisher(topic.name, Twist, queue_size=10)
+
+    def connect(self):
+        logger.infof('Connect mqtt broker')
+        self.__client.connect(self._params.mqtt.host, port=self._params.mqtt.port, keepalive=60)
+        self.__client.loop_start()
+        return self
 
     def start(self):
-        logger.debugf('Start Listening')
-        self.__client.connect(self.__params.mqtt.host, port=self.__params.mqtt.port, keepalive=60)
-        self.__client.loop_start()
-
-        self.__ros_pub = rospy.Publisher(self.__params.ros.topics.turtlesim.publish, Twist, queue_size=10)
+        logger.infof('Started Node : {}', self.node_name)
         rospy.spin()
 
-    def __on_connect(self, client, userdata, flags, response_code):
-        logger.debugf('mqtt connect status={}', response_code)
-        client.subscribe(self.__params.mqtt.topics.command_sender.subscribe)
+    def nodetest(self):
+        import time
+        logger.warnf('Test publish using publishtest of rostest')
+        while True:
+            self.__ros_pub.publish(Twist())
+            time.sleep(1)
 
-    def __on_message(self, client, userdata, msg):
+    def _on_connect(self, client, userdata, flags, response_code):
+        logger.infof('mqtt connect status={}', response_code)
+        client.subscribe(findItem(self._params.mqtt.topics, 'key', 'command_sender').name)
+
+    def _on_message(self, client, userdata, msg):
         logger.debugf('received msg={}', str(msg.payload))
         payload = str(msg.payload)
         if payload == 'circle':
-            self.__do_circle()
+            self._do_circle()
 
-    def __do_circle(self):
+    def _do_circle(self):
         logger.infof('do circle')
 
         rate = 60

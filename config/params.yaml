@@ -2,9 +2,9 @@ mqtt:
   host: "localhost"
   port: 1883
   topics:
-    command_sender:
-      subscribe: "/ros/turtle/cmd"
+    - key: "command_sender"
+      name: "/ros/turtle/cmd"
 ros:
   topics:
-    turtlesim:
-      publish: "/turtle1/cmd_vel"
+    - key: "turtlesim"
+      name: "/turtle1/cmd_vel"

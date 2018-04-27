@@ -15,3 +15,12 @@ def __convert(obj):
 
 def getParams(d):
     return __convert(d)
+
+def findItem(l, key_name, key_value):
+    if not isinstance(l, list):
+        return None
+    if key_name is None or not isinstance(key_name, str):
+        return None
+    if key_value is None or not isinstance(key_value, str):
+        return None
+    return next((item for item in l if getattr(item, key_name, None) == key_value), None)
