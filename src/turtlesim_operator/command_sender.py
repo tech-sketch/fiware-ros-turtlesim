@@ -35,18 +35,19 @@ class CommandSender(object):
         rospy.spin()
 
     def nodetest(self):
-        import time
+        from collections import namedtuple
         logger.warnf('Test publish using publishtest of rostest')
-        while True:
-            self.__ros_pub.publish(Twist())
-            time.sleep(1)
+        r = rospy.Rate(0.5)
+        while not rospy.is_shutdown():
+            self._on_message(None, None, namedtuple('msg', ('payload',))(payload='circle'))
+            r.sleep()
 
     def _on_connect(self, client, userdata, flags, response_code):
         logger.infof('mqtt connect status={}', response_code)
         client.subscribe(findItem(self._params.mqtt.topics, 'key', 'command_sender').name)
 
     def _on_message(self, client, userdata, msg):
-        logger.debugf('received msg={}', str(msg.payload))
+        logger.infof('received message from mqtt: {}', str(msg.payload))
         payload = str(msg.payload)
         if payload == 'circle':
             self._do_circle()

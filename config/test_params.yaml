@@ -4,7 +4,11 @@ mqtt:
   topics:
     - key: "command_sender"
       name: "/mqtt/topics/command_sender"
+    - key: "attribute_receiver"
+      name: "/mqtt/topics/attribute_receiver"
 ros:
   topics:
     - key: "turtlesim"
       name: "/ros/topics/turtlesim"
+    - key: "temperature"
+      name: "/ros/topics/temperature"

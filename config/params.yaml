@@ -4,7 +4,11 @@ mqtt:
   topics:
     - key: "command_sender"
       name: "/ros/turtle/cmd"
+    - key: "attribute_receiver"
+      name: "/ros/turtle/temperature"
 ros:
   topics:
     - key: "turtlesim"
       name: "/turtle1/cmd_vel"
+    - key: "temperature"
+      name: "/turtle1/temperature"

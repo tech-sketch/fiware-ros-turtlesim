@@ -1,10 +1,19 @@
 <launch>
-  <node name="turtlesim_operator" pkg="turtlesim_operator" type="command_sender_node.py">
+  <node name="command_sender" pkg="turtlesim_operator" type="command_sender_node.py" output="screen">
     <rosparam command="load" file="$(find turtlesim_operator)/config/test_params.yaml"/>
     <param name="mode" value="nodetest"/>
     <remap from="/ros/topics/turtlesim" to="nodetest_topic"/>
   </node>
-  <test test-name="test_params" name="turtlesim_operator" pkg="turtlesim_operator" type="test_params.py"/>
+  <node name="test_node" pkg="turtlesim_operator" type="test_node.py" output="screen">
+    <rosparam command="load" file="$(find turtlesim_operator)/config/test_params.yaml"/>
+  </node>
+  <test test-name="test_command_sender" name="command_sender" pkg="turtlesim_operator" type="test_command_sender.py">
+    <rosparam command="load" file="$(find turtlesim_operator)/config/test_params.yaml"/>
+    <param name="mode" value="nodetest"/>
+  </test>
+  <test test-name="test_attribute_receiver" name="attribute_receiver" pkg="turtlesim_operator" type="test_attribute_receiver.py">
+    <rosparam command="load" file="$(find turtlesim_operator)/config/test_params.yaml"/>
+  </test>
   <test test-name="pubtest" type="publishtest" pkg="rostest">
     <rosparam>
       topics:

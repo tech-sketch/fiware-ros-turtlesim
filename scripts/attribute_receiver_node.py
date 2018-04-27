@@ -3,7 +3,8 @@
 import os
 
 import rospy
-from turtlesim_operator.command_sender import CommandSender
+
+from turtlesim_operator.attribute_receiver import AttributeReceiver
 from turtlesim_operator.logging import getLogger
 logger = getLogger(__name__)
 
@@ -13,8 +14,8 @@ def main():
     try:
         rospy.init_node(NODE_NAME)
         logger.infof('Start node : {}', NODE_NAME)
-        sender = CommandSender(NODE_NAME)
-        sender.connect().start()
+        receiver = AttributeReceiver(NODE_NAME)
+        receiver.connect().start()
     except rospy.ROSInterruptException:
         pass
 
