@@ -9,7 +9,7 @@ from mock import MagicMock, patch, call
 import rosunit
 from geometry_msgs.msg import Twist
 
-from turtlesim_operator.command_sender import CommandSender
+from turtlesim_operator.command_sender import CommandSender, RATE
 
 class TestCommandSender(unittest.TestCase):
     def setMock(self, mocked_rospy, mocked_mqtt):
@@ -43,7 +43,7 @@ class TestCommandSender(unittest.TestCase):
 
         self.assertFalse(mocked_mqtt.called)
         mocked_mqtt.Client.assert_called_once_with(protocol=mocked_mqtt.MQTTv311)
-        self.assertEqual(mocked_rospy.on_shutdown.call_count, 2)
+        self.assertEqual(mocked_rospy.on_shutdown.call_count, 3)
         mocked_rospy.Publisher.assert_called_once_with('/ros/topics/turtlesim', Twist, queue_size=10)
 
     @patch('turtlesim_operator.command_sender.mqtt')
@@ -95,9 +95,10 @@ class TestCommandSender(unittest.TestCase):
 
         mocked_pub = mocked_rospy.Publisher.return_value
 
-        CommandSender('foo')._do_circle()
-        mocked_rospy.Rate.assert_called_once_with(60)
-        self.assertEqual(mocked_pub.publish.call_count, int(2 * pi * 60) + 2)
+        t = CommandSender('foo')._do_circle()
+        t.join()
+        mocked_rospy.Rate.assert_called_once_with(RATE)
+        self.assertEqual(mocked_pub.publish.call_count, int(2 * pi * RATE) + 1)
         args_list = mocked_pub.publish.call_args_list
         twist = Twist()
         twist.linear.x = 1.0
