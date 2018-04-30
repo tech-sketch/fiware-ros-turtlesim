@@ -24,6 +24,7 @@ class AttributeReceiver(object):
     def connect(self):
         logger.infof('Connect mqtt broker')
         self.__client.connect(self._params.mqtt.host, port=self._params.mqtt.port, keepalive=60)
+        self.__client.loop_start()
         return self
 
     def start(self):
