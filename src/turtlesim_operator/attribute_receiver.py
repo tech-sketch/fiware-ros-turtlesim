@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
+import ssl
+
 import rospy
 from std_msgs.msg import Float32
 
@@ -23,6 +26,12 @@ class AttributeReceiver(object):
 
     def connect(self):
         logger.infof('Connect mqtt broker')
+
+        if hasattr(self._params.mqtt, 'cafile') and os.path.isfile(self._params.mqtt.cafile):
+            self.__client.tls_set(self._params.mqtt.cafile, tls_version=ssl.PROTOCOL_TLSv1_2)
+        if hasattr(self._params.mqtt, 'username') and hasattr(self._params.mqtt, 'password'):
+            self.__client.username_pw_set(self._params.mqtt.username, self._params.mqtt.password)
+
         self.__client.connect(self._params.mqtt.host, port=self._params.mqtt.port, keepalive=60)
         self.__client.loop_start()
         return self

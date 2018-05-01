@@ -1,9 +1,13 @@
 mqtt:
-  host: "localhost"
-  port: 1883
+  host: "mqtt.nmatsui.work"
+  port: 8883
+  cafile: "/home/ubuntu/ros_ws/src/turtlesim_operator/secrets/ca.crt"
+  username: "turtlesim"
+  password: ""
   topics:
     - key: "command_sender"
-      name: "/ros/turtle/cmd"
+      # name: "/ros/turtle/cmd"
+      name: "/controller/cmd"
     - key: "attribute_receiver"
       name: "/ros/turtle/temperature"
 ros:
