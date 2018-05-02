@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 import ssl
 import threading
 from math import pi
@@ -14,6 +15,8 @@ from turtlesim_operator.logging import getLogger
 logger = getLogger(__name__)
 
 RATE = 100
+
+CMD_PAYLOAD_RE = re.compile(r'^(?P<device_id>.+)@move\|(?P<cmd>.+)$')
 
 class CommandSender(object):
     def __init__(self, node_name):
@@ -61,26 +64,36 @@ class CommandSender(object):
         client.subscribe(findItem(self._params.mqtt.topics, 'key', 'command_sender').name)
 
     def _on_message(self, client, userdata, msg):
-        payload = msg.payload
+        payload = str(msg.payload)
         logger.infof('received message from mqtt: {}', payload)
-        if payload == 'circle':
-            self._do_circle()
-        elif payload == 'square':
-            self._do_square()
-        elif payload == 'triangle':
-            self._do_triangle()
-        elif payload == 'cross':
-            self._do_stop()
-        elif payload == 'up':
-            self._do_forward()
-        elif payload == 'down':
-            self._do_backward()
-        elif payload == 'left':
-            self._do_turnleft()
-        elif payload == 'right':
-            self._do_turnright()
+        matcher = CMD_PAYLOAD_RE.match(payload)
+        if matcher:
+            cmd = matcher.group('cmd')
+            device_id = matcher.group('device_id')
+            cmdexe = 'MOVED: {}'.format(cmd)
+            if cmd == 'circle':
+                self._do_circle()
+            elif cmd == 'square':
+                self._do_square()
+            elif cmd == 'triangle':
+                self._do_triangle()
+            elif cmd == 'cross':
+                self._do_stop()
+            elif cmd == 'up':
+                self._do_forward()
+            elif cmd == 'down':
+                self._do_backward()
+            elif cmd == 'left':
+                self._do_turnleft()
+            elif cmd == 'right':
+                self._do_turnright()
+            else:
+                logger.warnf('unknown cmd: {}', payload)
+                cmdexe = 'UNKNOWN CMD: {}'.format(cmd)
+            self.__client.publish(findItem(self._params.mqtt.topics, 'key', 'command_sender_exec').name,
+                                  '{device_id}@move|{cmdexe}'.format(device_id=device_id, cmdexe=cmdexe))
         else:
-            logger.warnf('unknown msg: {}', payload)
+            logger.warnf('unkown payload: {}', payload)
         logger.debugf('active threds = {}', threading.active_count())
 
     def _do_circle(self):
