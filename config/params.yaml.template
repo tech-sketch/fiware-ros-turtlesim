@@ -6,9 +6,9 @@ mqtt:
   password: ""
   topics:
     - key: "command_sender"
-      name: "/gamepad/turtlesim/cmd"
+      name: "/demo1/turtlesim/cmd"
     - key: "command_sender_exec"
-      name: "/gamepad/turtlesim/cmdexe"
+      name: "/demo1/turtlesim/cmdexe"
     - key: "attribute_receiver"
       name: "/ros/turtle/temperature"
 ros:
