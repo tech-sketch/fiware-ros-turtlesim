@@ -14,9 +14,6 @@ from turtlesim_operator.params import getParams, findItem
 from turtlesim_operator.logging import getLogger
 logger = getLogger(__name__)
 
-RATE = 100
-
-CMD_PAYLOAD_RE = re.compile(r'^(?P<device_id>.+)@move\|(?P<cmd>.+)$')
 
 class CommandSender(object):
     def __init__(self, node_name):
@@ -35,21 +32,30 @@ class CommandSender(object):
         self.__do_move = False
         self.__lock = threading.Lock()
 
+        self._cmd_payload_re = re.compile(findItem(self._params.mqtt.topics, 'key', 'command_sender').re)
+
     def connect(self):
         logger.infof('Connect mqtt broker')
 
-        if hasattr(self._params.mqtt, 'cafile') and os.path.isfile(self._params.mqtt.cafile):
-            self.__client.tls_set(self._params.mqtt.cafile, tls_version=ssl.PROTOCOL_TLSv1_2)
+        if hasattr(self._params.mqtt, 'cafile'):
+            cafile_path = self._params.mqtt.cafile.strip()
+            if len(cafile_path) > 0 and os.path.isfile(cafile_path):
+                self.__client.tls_set(cafile_path, tls_version=ssl.PROTOCOL_TLSv1_2)
+
         if hasattr(self._params.mqtt, 'username') and hasattr(self._params.mqtt, 'password'):
-            self.__client.username_pw_set(self._params.mqtt.username, self._params.mqtt.password)
+            username = self._params.mqtt.username.strip()
+            password = self._params.mqtt.password.strip()
+            if len(username) > 0 and len(password) > 0:
+                self.__client.username_pw_set(username, password)
 
         self.__client.connect(self._params.mqtt.host, port=self._params.mqtt.port, keepalive=60)
         self.__client.loop_start()
         return self
 
     def start(self):
-        logger.infof('Started Node : {}', self.node_name)
+        logger.infof('CommandSender start : {}', self.node_name)
         rospy.spin()
+        logger.infof('CommandSender stop : {}', self.node_name)
 
     def nodetest(self):
         from collections import namedtuple
@@ -66,7 +72,7 @@ class CommandSender(object):
     def _on_message(self, client, userdata, msg):
         payload = str(msg.payload)
         logger.infof('received message from mqtt: {}', payload)
-        matcher = CMD_PAYLOAD_RE.match(payload)
+        matcher = self._cmd_payload_re.match(payload)
         if matcher:
             cmd = matcher.group('cmd')
             device_id = matcher.group('device_id')
@@ -89,9 +95,10 @@ class CommandSender(object):
                 self._do_turnright()
             else:
                 logger.warnf('unknown cmd: {}', payload)
-                cmdexe = 'UNKNOWN CMD: {}'.format(cmd)
-            self.__client.publish(findItem(self._params.mqtt.topics, 'key', 'command_sender_exec').name,
-                                  '{device_id}@move|{cmdexe}'.format(device_id=device_id, cmdexe=cmdexe))
+                cmd = 'UNKNOWN CMD: {}'.format(cmd)
+            topic = findItem(self._params.mqtt.topics, 'key', 'command_sender_exec').name
+            fmt = findItem(self._params.mqtt.topics, 'key', 'command_sender_exec').format
+            self.__client.publish(topic, fmt.format(device_id=device_id, cmd=cmd))
         else:
             logger.warnf('unkown payload: {}', payload)
         logger.debugf('active threds = {}', threading.active_count())
@@ -99,43 +106,43 @@ class CommandSender(object):
     def _do_circle(self):
         logger.infof('do circle')
         def move(self):
-            self.__circle(int(2 * pi * RATE))
+            self.__circle(int(2 * pi * self._params.ros.rate))
         return self._do_move(move)
 
     def _do_square(self):
         logger.infof('do square')
         def move(self):
-            self.__linear(2 * RATE)
+            self.__linear(2 * self._params.ros.rate)
             self.__rotate(pi / 2)
-            self.__linear(2 * RATE)
+            self.__linear(2 * self._params.ros.rate)
             self.__rotate(pi / 2)
-            self.__linear(2 * RATE)
+            self.__linear(2 * self._params.ros.rate)
             self.__rotate(pi / 2)
-            self.__linear(2 * RATE)
+            self.__linear(2 * self._params.ros.rate)
             self.__rotate(pi / 2)
         return self._do_move(move)
 
     def _do_triangle(self):
         logger.infof('do triangle')
         def move(self):
-            self.__linear(2 * RATE)
+            self.__linear(2 * self._params.ros.rate)
             self.__rotate(pi * 2 / 3)
-            self.__linear(2 * RATE)
+            self.__linear(2 * self._params.ros.rate)
             self.__rotate(pi * 2 / 3)
-            self.__linear(2 * RATE)
+            self.__linear(2 * self._params.ros.rate)
             self.__rotate(pi * 2 / 3)
         return self._do_move(move)
 
     def _do_forward(self):
         logger.infof('do forward')
         def move(self):
-            self.__linear(int(RATE * 0.2))
+            self.__linear(int(self._params.ros.rate * 0.2))
         return self._do_move(move)
 
     def _do_backward(self):
         logger.infof('do backward')
         def move(self):
-            self.__linear(int(RATE * 0.2), reverse=True)
+            self.__linear(int(self._params.ros.rate * 0.2), reverse=True)
         return self._do_move(move)
 
     def _do_turnleft(self):
@@ -189,11 +196,11 @@ class CommandSender(object):
     def __rotate(self, angle, reverse=False):
         move_cmd = Twist()
         move_cmd.angular.z = 1.0 if not reverse else -1.0
-        ticks = int(angle * RATE)
+        ticks = int(angle * self._params.ros.rate)
         self.__move(ticks, move_cmd)
 
     def __move(self, ticks, move_cmd):
-        r = rospy.Rate(RATE)
+        r = rospy.Rate(self._params.ros.rate)
         for t in range(ticks):
             if not self.__do_move:
                 break

@@ -1,17 +1,21 @@
 mqtt:
-  host: "mqtt.nmatsui.work"
+  host: "${MQTT_HOST}"
   port: 8883
   cafile: "/home/ubuntu/ros_ws/src/turtlesim_operator/secrets/ca.crt"
   username: "turtlesim"
-  password: ""
+  password: "${TURTLESIM_PASSWORD}"
   topics:
     - key: "command_sender"
       name: "/demo1/turtlesim/cmd"
+      re: "^(?P<device_id>.+)@move\\|(?P<cmd>.+)$"
     - key: "command_sender_exec"
       name: "/demo1/turtlesim/cmdexe"
+      format: "{device_id}@move|executed {cmd}"
     - key: "attribute_receiver"
-      name: "/ros/turtle/temperature"
+      name: "/demo1/turtlesim/attrs"
+      format: "{timestamp}|temperature|{temperature}"
 ros:
+  rate: 60
   topics:
     - key: "turtlesim"
       name: "/turtle1/cmd_vel"

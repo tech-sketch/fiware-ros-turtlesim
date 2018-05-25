@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 import ssl
+from datetime import datetime
+
+import pytz
 
 import rospy
 from std_msgs.msg import Float32
@@ -10,6 +13,7 @@ import paho.mqtt.client as mqtt
 from turtlesim_operator.params import getParams, findItem
 from turtlesim_operator.logging import getLogger
 logger = getLogger(__name__)
+
 
 class AttributeReceiver(object):
     def __init__(self, node_name):
@@ -27,23 +31,33 @@ class AttributeReceiver(object):
     def connect(self):
         logger.infof('Connect mqtt broker')
 
-        if hasattr(self._params.mqtt, 'cafile') and os.path.isfile(self._params.mqtt.cafile):
-            self.__client.tls_set(self._params.mqtt.cafile, tls_version=ssl.PROTOCOL_TLSv1_2)
+        if hasattr(self._params.mqtt, 'cafile'):
+            cafile_path = self._params.mqtt.cafile.strip()
+            if len(cafile_path) > 0 and os.path.isfile(cafile_path):
+                self.__client.tls_set(cafile_path, tls_version=ssl.PROTOCOL_TLSv1_2)
+
         if hasattr(self._params.mqtt, 'username') and hasattr(self._params.mqtt, 'password'):
-            self.__client.username_pw_set(self._params.mqtt.username, self._params.mqtt.password)
+            username = self._params.mqtt.username.strip()
+            password = self._params.mqtt.password.strip()
+            if len(username) > 0 and len(password) > 0:
+                self.__client.username_pw_set(username, password)
 
         self.__client.connect(self._params.mqtt.host, port=self._params.mqtt.port, keepalive=60)
         self.__client.loop_start()
         return self
 
     def start(self):
-        logger.infof('Started Node : {}', self.node_name)
-
+        logger.infof('AttributeReceiver start : {}', self.node_name)
         rospy.spin()
+        logger.infof('AttributeReceiver stop : {}', self.node_name)
 
     def _on_connect(self, client, userdata, flags, response_code):
         logger.infof('mqtt connect status={}', response_code)
 
     def _on_receive(self, data):
         logger.infof('received message from ros : {}', data.data)
-        self.__client.publish(findItem(self._params.mqtt.topics, 'key', 'attribute_receiver').name, data.data)
+        now = datetime.now(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+        topic = findItem(self._params.mqtt.topics, 'key', 'attribute_receiver').name
+        fmt = findItem(self._params.mqtt.topics, 'key', 'attribute_receiver').format
+        msg = fmt.format(timestamp=now, temperature=data.data)
+        self.__client.publish(topic, msg)
