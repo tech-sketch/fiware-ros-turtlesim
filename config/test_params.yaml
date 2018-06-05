@@ -4,9 +4,15 @@ mqtt:
   topics:
     - key: "command_sender"
       name: "/mqtt/topics/command_sender"
+      re: "^(?P<device_id>.+)@move\\|(?P<cmd>.+)$"
+    - key: "command_sender_exec"
+      name: "/mqtt/topics/command_sender_exec"
+      format: "{device_id}@move|executed {cmd}"
     - key: "attribute_receiver"
       name: "/mqtt/topics/attribute_receiver"
+      format: "{timestamp}|temperature|{temperature}"
 ros:
+  rate: 60
   topics:
     - key: "turtlesim"
       name: "/ros/topics/turtlesim"

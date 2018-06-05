@@ -7,7 +7,7 @@ from ddt import ddt, data, unpack
 
 import rosunit
 
-from turtlesim_operator.params import getParams, findItem, GENERIC_DICT
+from fiware_ros_turtlesim.params import getParams, findItem, GENERIC_DICT
 
 class TestGetParams(unittest.TestCase):
     def test_empty_dict(self):
@@ -117,5 +117,5 @@ class TestFindItem(unittest.TestCase):
             self.assertIsNone(result)
 
 if __name__ == '__main__':
-    rosunit.unitrun('turtlesim_operator', 'test_params', TestGetParams)
-    rosunit.unitrun('turtlesim_operator', 'test_params', TestFindItem)
+    rosunit.unitrun('fiware_ros_turtlesim', 'test_params', TestGetParams)
+    rosunit.unitrun('fiware_ros_turtlesim', 'test_params', TestFindItem)

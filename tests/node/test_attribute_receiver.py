@@ -11,13 +11,13 @@ import rostest
 import rospy
 from std_msgs.msg import Float32
 
-from turtlesim_operator.attribute_receiver import AttributeReceiver
+from fiware_ros_turtlesim.attribute_receiver import AttributeReceiver
 
 NODE_NAME = os.path.basename(__file__)
 
 class TestAttributeReceiver(unittest.TestCase):
 
-    @patch('turtlesim_operator.attribute_receiver.mqtt')
+    @patch('fiware_ros_turtlesim.attribute_receiver.mqtt')
     def test_on_receive(self, mocked_mqtt):
         mocked_client = mocked_mqtt.Client.return_value
 
@@ -38,4 +38,4 @@ class TestAttributeReceiver(unittest.TestCase):
 
 if __name__ == '__main__':
     rospy.init_node(NODE_NAME, anonymous=True)
-    rostest.rosrun('turtlesim_operator', 'test_attribute_receiver', TestAttributeReceiver)
+    rostest.rosrun('fiware_ros_turtlesim', 'test_attribute_receiver', TestAttributeReceiver)

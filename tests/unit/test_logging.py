@@ -9,7 +9,7 @@ from ddt import ddt, data, unpack
 
 import rosunit
 
-from turtlesim_operator.logging import getLogger
+from fiware_ros_turtlesim.logging import getLogger
 
 
 @ddt
@@ -21,7 +21,7 @@ class TestGetLogger(unittest.TestCase):
           {'logm': 'errf', 'rosm': 'logerr'},
           {'logm': 'fatalf', 'rosm': 'logfatal'},)
     @unpack
-    @patch('turtlesim_operator.logging.rospy')
+    @patch('fiware_ros_turtlesim.logging.rospy')
     def test_logger_wo_params(self, mocked_rospy, logm, rosm):
         name = 'foo'
         message = 'test message'
@@ -45,7 +45,7 @@ class TestGetLogger(unittest.TestCase):
           {'logm': 'errf', 'rosm': 'logerr'},
           {'logm': 'fatalf', 'rosm': 'logfatal'},)
     @unpack
-    @patch('turtlesim_operator.logging.rospy')
+    @patch('fiware_ros_turtlesim.logging.rospy')
     def test_logger_w_args(self, mocked_rospy, logm, rosm):
         name = 'foo'
         message = 'test message'
@@ -72,4 +72,4 @@ class TestGetLogger(unittest.TestCase):
         getattr(mocked_rospy, rosm).assert_called_once_with(log_message)
 
 if __name__ == '__main__':
-    rosunit.unitrun('turtlesim_operator', 'test_logging', TestGetLogger)
+    rosunit.unitrun('fiware_ros_turtlesim', 'test_logging', TestGetLogger)

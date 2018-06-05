@@ -1,18 +1,18 @@
 <launch>
-  <node name="command_sender" pkg="turtlesim_operator" type="command_sender_node.py" output="screen">
-    <rosparam command="load" file="$(find turtlesim_operator)/config/test_params.yaml"/>
+  <node name="command_sender" pkg="fiware-ros-turtlesim" type="command_sender_node.py" output="screen">
+    <rosparam command="load" file="$(find fiware-ros-turtlesim)/config/test_params.yaml"/>
     <param name="mode" value="nodetest"/>
     <remap from="/ros/topics/turtlesim" to="nodetest_topic"/>
   </node>
-  <node name="test_node" pkg="turtlesim_operator" type="test_node.py" output="screen">
-    <rosparam command="load" file="$(find turtlesim_operator)/config/test_params.yaml"/>
+  <node name="test_node" pkg="fiware-ros-turtlesim" type="test_node.py" output="screen">
+    <rosparam command="load" file="$(find fiware-ros-turtlesim)/config/test_params.yaml"/>
   </node>
-  <test test-name="test_command_sender" name="command_sender" pkg="turtlesim_operator" type="test_command_sender.py">
-    <rosparam command="load" file="$(find turtlesim_operator)/config/test_params.yaml"/>
+  <test test-name="test_command_sender" name="command_sender" pkg="fiware-ros-turtlesim" type="test_command_sender.py">
+    <rosparam command="load" file="$(find fiware-ros-turtlesim)/config/test_params.yaml"/>
     <param name="mode" value="nodetest"/>
   </test>
-  <test test-name="test_attribute_receiver" name="attribute_receiver" pkg="turtlesim_operator" type="test_attribute_receiver.py">
-    <rosparam command="load" file="$(find turtlesim_operator)/config/test_params.yaml"/>
+  <test test-name="test_attribute_receiver" name="attribute_receiver" pkg="fiware-ros-turtlesim" type="test_attribute_receiver.py">
+    <rosparam command="load" file="$(find fiware-ros-turtlesim)/config/test_params.yaml"/>
   </test>
   <test test-name="pubtest" type="publishtest" pkg="rostest">
     <rosparam>
