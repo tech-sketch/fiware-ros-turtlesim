@@ -11,6 +11,7 @@ from geometry_msgs.msg import Twist
 
 from fiware_ros_turtlesim.command_sender import CommandSender
 
+
 class TestCommandSender(unittest.TestCase):
     def setMock(self, mocked_rospy, mocked_mqtt):
         self.mocked_client = mocked_mqtt.Client.return_value
@@ -23,7 +24,7 @@ class TestCommandSender(unittest.TestCase):
                     "key": "command_sender",
                     "name": "/mqtt/topics/command_sender",
                     "re": "^(?P<device_id>.+)@move\\|(?P<cmd>.+)$",
-                },{
+                }, {
                     "key": "command_sender_exec",
                     "name": "/mqtt/topics/command_sender_exec",
                     "format": "{device_id}@move|executed {cmd}",

@@ -9,6 +9,7 @@ import rosunit
 
 from fiware_ros_turtlesim.params import getParams, findItem, GENERIC_DICT
 
+
 class TestGetParams(unittest.TestCase):
     def test_empty_dict(self):
         params = OrderedDict()
@@ -20,7 +21,7 @@ class TestGetParams(unittest.TestCase):
 
     def test_simple_dict(self):
         params = OrderedDict(
-            [('a', 'A'),]
+            [('a', 'A'), ]
         )
         result = getParams(params)
         self.assertEqual(result, namedtuple(GENERIC_DICT, ('a'))(a='A'))
@@ -32,7 +33,7 @@ class TestGetParams(unittest.TestCase):
                 ('a', OrderedDict(
                     [
                         ('aa', 'aA'),
-                        ('ab', OrderedDict([('aba', 'abA'),])),
+                        ('ab', OrderedDict([('aba', 'abA'), ])),
                     ]
                 )),
                 ('b', 'B'),
@@ -52,8 +53,8 @@ class TestGetParams(unittest.TestCase):
 
     def test_nested_list(self):
         params = [
-            OrderedDict([('a', 'A0'),]),
-            OrderedDict([('a', 'A1'),]),
+            OrderedDict([('a', 'A0'), ]),
+            OrderedDict([('a', 'A1'), ]),
             'B',
         ]
         result = getParams(params)
@@ -68,13 +69,14 @@ class TestGetParams(unittest.TestCase):
             [
                 ('a', 'A'),
                 ('b', [
-                    OrderedDict([('ba', 'bA0'), ('bb', 'bB0'),]),
-                    OrderedDict([('ba', 'bA1'), ('bb', 'bB1'),]),]),
+                    OrderedDict([('ba', 'bA0'), ('bb', 'bB0'), ]),
+                    OrderedDict([('ba', 'bA1'), ('bb', 'bB1'), ]), ]),
             ]
         )
         result = getParams(params)
         b_type = namedtuple(GENERIC_DICT, ('ba', 'bb'))
-        self.assertEqual(result, namedtuple(GENERIC_DICT, ('a', 'b'))(a='A', b=[b_type(ba='bA0', bb='bB0'), b_type(ba='bA1', bb='bB1')]))
+        self.assertEqual(result, namedtuple(GENERIC_DICT, ('a', 'b'))
+                         (a='A', b=[b_type(ba='bA0', bb='bB0'), b_type(ba='bA1', bb='bB1')]))
         self.assertEqual(result.a, 'A')
         self.assertEqual(result.b[0].ba, 'bA0')
         self.assertEqual(result.b[0].bb, 'bB0')
@@ -88,8 +90,8 @@ class TestFindItem(unittest.TestCase):
         super(TestFindItem, self).setUp()
         params = OrderedDict(
             [
-                ('a', [OrderedDict([('key', 'KEY1'), ('value', 'VALUE1'),]),
-                       OrderedDict([('key', 'KEY2'), ('value', 'VALUE2'),]),]),
+                ('a', [OrderedDict([('key', 'KEY1'), ('value', 'VALUE1'), ]),
+                       OrderedDict([('key', 'KEY2'), ('value', 'VALUE2'), ]), ]),
             ]
         )
         self.d = getParams(params)
@@ -115,6 +117,7 @@ class TestFindItem(unittest.TestCase):
             self.assertEqual(result.value, 'VALUE1')
         else:
             self.assertIsNone(result)
+
 
 if __name__ == '__main__':
     rosunit.unitrun('fiware_ros_turtlesim', 'test_params', TestGetParams)

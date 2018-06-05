@@ -76,7 +76,6 @@ class CommandSender(object):
         if matcher:
             cmd = matcher.group('cmd')
             device_id = matcher.group('device_id')
-            cmdexe = 'MOVED: {}'.format(cmd)
             if cmd == 'circle':
                 self._do_circle()
             elif cmd == 'square':
@@ -105,12 +104,14 @@ class CommandSender(object):
 
     def _do_circle(self):
         logger.infof('do circle')
+
         def move(self):
             self.__circle(int(2 * pi * self._params.ros.rate))
         return self._do_move(move)
 
     def _do_square(self):
         logger.infof('do square')
+
         def move(self):
             self.__linear(2 * self._params.ros.rate)
             self.__rotate(pi / 2)
@@ -124,6 +125,7 @@ class CommandSender(object):
 
     def _do_triangle(self):
         logger.infof('do triangle')
+
         def move(self):
             self.__linear(2 * self._params.ros.rate)
             self.__rotate(pi * 2 / 3)
@@ -135,24 +137,28 @@ class CommandSender(object):
 
     def _do_forward(self):
         logger.infof('do forward')
+
         def move(self):
             self.__linear(int(self._params.ros.rate * 0.2))
         return self._do_move(move)
 
     def _do_backward(self):
         logger.infof('do backward')
+
         def move(self):
             self.__linear(int(self._params.ros.rate * 0.2), reverse=True)
         return self._do_move(move)
 
     def _do_turnleft(self):
         logger.infof('do turn left')
+
         def move(self):
             self.__rotate(pi / 16)
         return self._do_move(move)
 
     def _do_turnright(self):
         logger.infof('do turn right')
+
         def move(self):
             self.__rotate(pi / 16, reverse=True)
         return self._do_move(move)

@@ -3,7 +3,7 @@
 import unittest
 import sys
 
-from mock import MagicMock, patch
+from mock import patch
 
 from ddt import ddt, data, unpack
 
@@ -70,6 +70,7 @@ class TestGetLogger(unittest.TestCase):
         self.assertFalse(mocked_rospy.called)
         self.assertTrue(getattr(mocked_rospy, rosm).called)
         getattr(mocked_rospy, rosm).assert_called_once_with(log_message)
+
 
 if __name__ == '__main__':
     rosunit.unitrun('fiware_ros_turtlesim', 'test_logging', TestGetLogger)

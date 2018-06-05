@@ -11,6 +11,7 @@ from std_msgs.msg import Float32
 
 from fiware_ros_turtlesim.attribute_receiver import AttributeReceiver
 
+
 class TestAttributeReceiver(unittest.TestCase):
     def setMock(self, mocked_rospy, mocked_mqtt):
         self.mocked_client = mocked_mqtt.Client.return_value

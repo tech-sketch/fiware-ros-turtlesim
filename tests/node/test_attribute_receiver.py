@@ -3,17 +3,16 @@
 import os
 import time
 import unittest
-from collections import namedtuple
 
-from mock import MagicMock, patch, call
+from mock import patch
 
 import rostest
 import rospy
-from std_msgs.msg import Float32
 
 from fiware_ros_turtlesim.attribute_receiver import AttributeReceiver
 
 NODE_NAME = os.path.basename(__file__)
+
 
 class TestAttributeReceiver(unittest.TestCase):
 
@@ -21,7 +20,7 @@ class TestAttributeReceiver(unittest.TestCase):
     def test_on_receive(self, mocked_mqtt):
         mocked_client = mocked_mqtt.Client.return_value
 
-        receiver = AttributeReceiver(NODE_NAME).connect()
+        AttributeReceiver(NODE_NAME).connect()
 
         self.assertFalse(mocked_mqtt.called)
         mocked_mqtt.Client.assert_called_once_with(protocol=mocked_mqtt.MQTTv311)
@@ -35,6 +34,7 @@ class TestAttributeReceiver(unittest.TestCase):
             count += 1
             time.sleep(1)
         self.assertTrue(False)
+
 
 if __name__ == '__main__':
     rospy.init_node(NODE_NAME, anonymous=True)

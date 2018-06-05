@@ -7,9 +7,9 @@ import rostest
 import rospy
 
 from fiware_ros_turtlesim.command_sender import CommandSender
-from fiware_ros_turtlesim.params import GENERIC_DICT
 
 NODE_NAME = os.path.basename(__file__)
+
 
 class TestCommandSender(unittest.TestCase):
 

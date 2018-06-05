@@ -10,6 +10,7 @@ logger = getLogger(__name__)
 
 NODE_NAME = os.path.basename(__file__)
 
+
 def main():
     try:
         rospy.init_node(NODE_NAME)
@@ -22,6 +23,7 @@ def main():
             sender.nodetest()
     except rospy.ROSInterruptException:
         pass
+
 
 if __name__ == '__main__':
     main()

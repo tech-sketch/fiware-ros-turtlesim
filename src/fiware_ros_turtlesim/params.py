@@ -3,6 +3,7 @@ from collections import namedtuple
 
 GENERIC_DICT = 'GenericDict'
 
+
 def __convert(obj):
     if isinstance(obj, dict):
         for key, value in obj.iteritems():
@@ -13,8 +14,10 @@ def __convert(obj):
     else:
         return obj
 
+
 def getParams(d):
     return __convert(d)
+
 
 def findItem(l, key_name, key_value):
     if not isinstance(l, list):
