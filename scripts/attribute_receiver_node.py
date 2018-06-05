@@ -4,8 +4,8 @@ import os
 
 import rospy
 
-from turtlesim_operator.attribute_receiver import AttributeReceiver
-from turtlesim_operator.logging import getLogger
+from fiware_ros_turtlesim.attribute_receiver import AttributeReceiver
+from fiware_ros_turtlesim.logging import getLogger
 logger = getLogger(__name__)
 
 NODE_NAME = os.path.basename(__file__)

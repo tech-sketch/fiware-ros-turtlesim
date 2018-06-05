@@ -10,8 +10,8 @@ from geometry_msgs.msg import Twist
 
 import paho.mqtt.client as mqtt
 
-from turtlesim_operator.params import getParams, findItem
-from turtlesim_operator.logging import getLogger
+from fiware_ros_turtlesim.params import getParams, findItem
+from fiware_ros_turtlesim.logging import getLogger
 logger = getLogger(__name__)
 
 
@@ -62,7 +62,7 @@ class CommandSender(object):
         logger.warnf('Test publish using publishtest of rostest')
         r = rospy.Rate(0.5)
         while not rospy.is_shutdown():
-            self._on_message(None, None, namedtuple('msg', ('payload',))(payload='circle'))
+            self._on_message(None, None, namedtuple('msg', ('payload',))(payload='device_id@move|circle'))
             r.sleep()
 
     def _on_connect(self, client, userdata, flags, response_code):

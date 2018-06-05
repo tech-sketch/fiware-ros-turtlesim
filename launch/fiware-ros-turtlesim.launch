@@ -1,0 +1,11 @@
+<launch>
+  <node name="command_sender" pkg="fiware-ros-turtlesim" type="command_sender_node.py" output="screen">
+    <rosparam command="delete" param=""/>
+    <rosparam command="load" file="$(find fiware-ros-turtlesim)/config/params.yaml"/>
+    <param name="mode" value="production"/>
+  </node>
+  <node name="attribute_receiver" pkg="fiware-ros-turtlesim" type="attribute_receiver_node.py" output="screen">
+    <rosparam command="delete" param=""/>
+    <rosparam command="load" file="$(find fiware-ros-turtlesim)/config/params.yaml"/>
+  </node>
+</launch>

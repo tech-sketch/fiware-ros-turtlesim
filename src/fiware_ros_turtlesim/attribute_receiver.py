@@ -10,8 +10,8 @@ from std_msgs.msg import Float32
 
 import paho.mqtt.client as mqtt
 
-from turtlesim_operator.params import getParams, findItem
-from turtlesim_operator.logging import getLogger
+from fiware_ros_turtlesim.params import getParams, findItem
+from fiware_ros_turtlesim.logging import getLogger
 logger = getLogger(__name__)
 
 
