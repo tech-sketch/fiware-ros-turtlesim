@@ -90,9 +90,13 @@ class TestCommandSender(unittest.TestCase):
         sender._on_message(self.mocked_client, None, msg_type(payload='deviceid@move|circle'))
         sender._do_circle.assert_called_once_with()
 
+        cmdexec = 'deviceid@move|executed circle'
+        self.mocked_client.publish.assert_called_once_with('/mqtt/topics/command_sender_exec', cmdexec)
+
         sender._do_circle = MagicMock()
         sender._on_message(self.mocked_client, None, msg_type(payload='invalid'))
         sender._do_circle.assert_not_called()
+        self.assertEqual(self.mocked_client.publish.call_count, 1)
 
     @patch('fiware_ros_turtlesim.command_sender.mqtt')
     @patch('fiware_ros_turtlesim.command_sender.rospy')
@@ -112,6 +116,135 @@ class TestCommandSender(unittest.TestCase):
         for i in range(int(2 * pi * 60)):
             self.assertEqual(args_list[i], call(twist))
         self.assertEqual(args_list[-1], call(Twist()))
+
+    @patch('fiware_ros_turtlesim.command_sender.mqtt')
+    @patch('fiware_ros_turtlesim.command_sender.rospy')
+    def test_do_square(self, mocked_rospy, mocked_mqtt):
+        self.setMock(mocked_rospy, mocked_mqtt)
+
+        mocked_pub = mocked_rospy.Publisher.return_value
+
+        t = CommandSender('foo')._do_square()
+        t.join()
+        mocked_rospy.Rate.assert_called_with(60)
+        self.assertEqual(mocked_pub.publish.call_count, 4 * (2 * 60 + 1) + 4 * (int(pi / 2 * 60) + 1))
+        args_list = mocked_pub.publish.call_args_list
+        linear = Twist()
+        linear.linear.x = 1.0
+        linear.angular.z = 0.0
+        rotate = Twist()
+        rotate.linear.x = 0.0
+        rotate.angular.z = 1.0
+        for i in range(2 * 60):
+            self.assertEqual(args_list[i], call(linear))
+        self.assertEqual(args_list[i + 1], call(Twist()))
+        for j in range(int(pi / 2 * 60)):
+            self.assertEqual(args_list[i + 2 + j], call(rotate))
+        self.assertEqual(args_list[i + 2 + j + 1], call(Twist()))
+        self.assertEqual(args_list[-1], call(Twist()))
+
+    @patch('fiware_ros_turtlesim.command_sender.mqtt')
+    @patch('fiware_ros_turtlesim.command_sender.rospy')
+    def test_do_triangle(self, mocked_rospy, mocked_mqtt):
+        self.setMock(mocked_rospy, mocked_mqtt)
+
+        mocked_pub = mocked_rospy.Publisher.return_value
+
+        t = CommandSender('foo')._do_triangle()
+        t.join()
+        mocked_rospy.Rate.assert_called_with(60)
+        self.assertEqual(mocked_pub.publish.call_count, 3 * (2 * 60 + 1) + 3 * (int(pi * 2 / 3 * 60) + 1))
+        args_list = mocked_pub.publish.call_args_list
+        linear = Twist()
+        linear.linear.x = 1.0
+        linear.angular.z = 0.0
+        rotate = Twist()
+        rotate.linear.x = 0.0
+        rotate.angular.z = 1.0
+        for i in range(2 * 60):
+            self.assertEqual(args_list[i], call(linear))
+        self.assertEqual(args_list[i + 1], call(Twist()))
+        for j in range(int(pi * 2 / 3 * 60)):
+            self.assertEqual(args_list[i + 2 + j], call(rotate))
+        self.assertEqual(args_list[i + 2 + j + 1], call(Twist()))
+        self.assertEqual(args_list[-1], call(Twist()))
+
+    @patch('fiware_ros_turtlesim.command_sender.mqtt')
+    @patch('fiware_ros_turtlesim.command_sender.rospy')
+    def test_do_forward(self, mocked_rospy, mocked_mqtt):
+        self.setMock(mocked_rospy, mocked_mqtt)
+
+        mocked_pub = mocked_rospy.Publisher.return_value
+
+        t = CommandSender('foo')._do_forward()
+        t.join()
+        mocked_rospy.Rate.assert_called_with(60)
+        self.assertEqual(mocked_pub.publish.call_count, int(0.2 * 60 + 1))
+        args_list = mocked_pub.publish.call_args_list
+        linear = Twist()
+        linear.linear.x = 1.0
+        linear.angular.z = 0.0
+        for i in range(int(0.2 * 60)):
+            self.assertEqual(args_list[i], call(linear))
+        self.assertEqual(args_list[-1], call(Twist()))
+
+    @patch('fiware_ros_turtlesim.command_sender.mqtt')
+    @patch('fiware_ros_turtlesim.command_sender.rospy')
+    def test_do_backward(self, mocked_rospy, mocked_mqtt):
+        self.setMock(mocked_rospy, mocked_mqtt)
+
+        mocked_pub = mocked_rospy.Publisher.return_value
+
+        t = CommandSender('foo')._do_backward()
+        t.join()
+        mocked_rospy.Rate.assert_called_with(60)
+        self.assertEqual(mocked_pub.publish.call_count, int(0.2 * 60 + 1))
+        args_list = mocked_pub.publish.call_args_list
+        linear = Twist()
+        linear.linear.x = -1.0
+        linear.angular.z = 0.0
+        for i in range(int(0.2 * 60)):
+            self.assertEqual(args_list[i], call(linear))
+        self.assertEqual(args_list[-1], call(Twist()))
+
+    @patch('fiware_ros_turtlesim.command_sender.mqtt')
+    @patch('fiware_ros_turtlesim.command_sender.rospy')
+    def test_do_turnleft(self, mocked_rospy, mocked_mqtt):
+        self.setMock(mocked_rospy, mocked_mqtt)
+
+        mocked_pub = mocked_rospy.Publisher.return_value
+
+        t = CommandSender('foo')._do_turnleft()
+        t.join()
+        mocked_rospy.Rate.assert_called_with(60)
+        self.assertEqual(mocked_pub.publish.call_count, (int(pi / 16 * 60) + 1))
+        args_list = mocked_pub.publish.call_args_list
+        rotate = Twist()
+        rotate.linear.x = 0.0
+        rotate.angular.z = 1.0
+        for i in range(int(pi / 16 * 60)):
+            self.assertEqual(args_list[i], call(rotate))
+        self.assertEqual(args_list[-1], call(Twist()))
+
+    @patch('fiware_ros_turtlesim.command_sender.mqtt')
+    @patch('fiware_ros_turtlesim.command_sender.rospy')
+    def test_do_turnright(self, mocked_rospy, mocked_mqtt):
+        self.setMock(mocked_rospy, mocked_mqtt)
+
+        mocked_pub = mocked_rospy.Publisher.return_value
+
+        t = CommandSender('foo')._do_turnright()
+        t.join()
+        mocked_rospy.Rate.assert_called_with(60)
+        self.assertEqual(mocked_pub.publish.call_count, (int(pi / 16 * 60) + 1))
+        args_list = mocked_pub.publish.call_args_list
+        rotate = Twist()
+        rotate.linear.x = 0.0
+        rotate.angular.z = -1.0
+        for i in range(int(pi / 16 * 60)):
+            self.assertEqual(args_list[i], call(rotate))
+        self.assertEqual(args_list[-1], call(Twist()))
+
 
 if __name__ == '__main__':
     rosunit.unitrun('fiware_ros_turtlesim', 'test_command_sender', TestCommandSender)
