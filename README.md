@@ -16,19 +16,30 @@ When receiving a `std_msgs/Float32` message from its topic, this node publishes 
 
 **ROS kinetic**
 
+## Install libraries
+
+```bash
+$ cd ~/ros_ws/src
+$ git clone https://github.com/tech-sketch/fiware-ros-turtlesim.git
+$ cd fiware-ros-turtlesim
+$ pip install -r requirements/common.txt
+```
+
 ## How to Run
 1. start X server.
 1. open a terminal and start `roscore`.
 
     ```bash
-    terminal1$ source devel/setup.bash
-    terminal1$ roscore
+    terminal1:$ cd ~/ros_ws
+    terminal1:$ source devel/setup.bash
+    terminal1:$ roscore
     ```
 1. open another terminal and start `turtlesim`.
 
     ```bash
-    terminal2$ source devel/setup.bash
-    terminal2$ rosrun turtlesim turtlesim_node
+    terminal2:$ cd ~/ros_ws
+    terminal2:$ source devel/setup.bash
+    terminal2:$ rosrun turtlesim turtlesim_node
     ```
 1. configure `config/params.yaml`
 
@@ -37,8 +48,9 @@ When receiving a `std_msgs/Float32` message from its topic, this node publishes 
 1. open another terminal and start `fiware-ros-turtlesim`.
 
     ```bash
-    terminal3$ source devel/setup.bash
-    terminal3$ roslaunch fiware-ros-turtlesim fiware-ros-turtlesim.launch
+    terminal3:$ cd ~/ros_ws
+    terminal3:$ source devel/setup.bash
+    terminal3:$ roslaunch fiware-ros-turtlesim fiware-ros-turtlesim.launch
     ```
 
 ## License
