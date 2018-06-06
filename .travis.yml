@@ -4,7 +4,6 @@ services:
   - docker
 before_install:
   - docker build -t tech-sketch/fiware-ros-turtlesim .
-  - docker run tech-sketch/fiware-ros-turtlesim /bin/bash -c "pip install -r src/fiware-ros-turtlesim/requirements/test.txt;catkin_make;source devel/setup.bash;flake8 src/fiware-ros-turtlesim;catkin_make run_tests"
 script:
-  - flake8 src/fiware_ros_turtlesim
-  - catkin_make run_tests
+  - docker run tech-sketch/fiware-ros-turtlesim /bin/bash -c "pip install -r src/fiware-ros-turtlesim/requirements/test.txt;catkin_make;source devel/setup.bash;flake8 src/fiware-ros-turtlesim"
+  - docker run tech-sketch/fiware-ros-turtlesim /bin/bash -c "pip install -r src/fiware-ros-turtlesim/requirements/test.txt;catkin_make;source devel/setup.bash;catkin_make run_tests;catkin_test_results"
